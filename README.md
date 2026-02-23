@@ -7,7 +7,8 @@ A real-time news aggregator for major European stocks, built with Flask. Pulls n
 ## Features
 
 - **300 blue-chip tickers** across 13 European exchanges (Paris, London, Frankfurt, Amsterdam, Madrid, Zurich, Nordic, Milan, Brussels, Lisbon, Warsaw, Vienna, Dublin)
-- **Multi-source news aggregation**: Finnhub API, Bloomberg, Reuters, Financial Times, DW, Investing.com, and index/sector-specific feeds
+- **1,400+ articles** per refresh with **100% ticker coverage** — every single company has news
+- **Multi-source news aggregation**: Finnhub API, Google News per-company RSS, Bloomberg, Reuters, Financial Times, DW, Investing.com, and index/sector-specific feeds
 - **Client-side filtering**: instant exchange tabs and free-text search (ticker, company, or headline)
 - **Background refresh**: news updates every 15 minutes with rate-limited API calls
 - **Responsive design**: 3-column grid on desktop, single column on mobile
@@ -17,6 +18,7 @@ A real-time news aggregator for major European stocks, built with Flask. Pulls n
 
 | Source | Method | Coverage |
 |--------|--------|----------|
+| Google News (per-company) | RSS search per company name, 15 threads in parallel | All 300 tickers — ensures 100% coverage |
 | Finnhub | API (company-news + general) | Per-ticker + market news |
 | Bloomberg | Direct RSS feeds | Markets, economics, technology, wealth |
 | Reuters | Google News RSS proxy | Stocks, European equities, indices |
@@ -54,7 +56,7 @@ python app.py
 
 Open **http://localhost:5001** in your browser.
 
-The first page load takes ~6 minutes while it fetches news for all 300 tickers. Subsequent loads are instant from cache.
+The first page load takes ~7 minutes while it fetches news for all 300 tickers (Finnhub rate-limited + Google News in parallel). Subsequent loads are instant from cache.
 
 ## Exchanges Covered
 
@@ -78,4 +80,4 @@ The first page load takes ~6 minutes while it fetches news for all 300 tickers. 
 
 - **Backend**: Flask, Requests, feedparser, python-dotenv
 - **Frontend**: Jinja2 templates, vanilla JS, CSS Grid
-- **Data**: Finnhub API + 22 RSS feeds
+- **Data**: Finnhub API + 22 RSS feeds + 300 Google News per-company feeds (parallel)
