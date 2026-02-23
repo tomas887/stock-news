@@ -214,6 +214,31 @@ header h1 {
     color: #fff;
 }
 
+.badge-brussels {
+    background: #9333ea;
+    color: #fff;
+}
+
+.badge-lisbon {
+    background: #0d9488;
+    color: #fff;
+}
+
+.badge-warsaw {
+    background: #e11d48;
+    color: #fff;
+}
+
+.badge-vienna {
+    background: #4338ca;
+    color: #fff;
+}
+
+.badge-dublin {
+    background: #15803d;
+    color: #fff;
+}
+
 .badge-general {
     background: #6b7280;
     color: #fff;
