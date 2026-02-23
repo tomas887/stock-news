@@ -6,7 +6,7 @@ A real-time news aggregator for major European stocks, built with Flask. Pulls n
 
 ## Features
 
-- **113 blue-chip tickers** across 8 European exchanges (Paris, London, Frankfurt, Amsterdam, Madrid, Zurich, Nordic, Milan)
+- **300 blue-chip tickers** across 13 European exchanges (Paris, London, Frankfurt, Amsterdam, Madrid, Zurich, Nordic, Milan, Brussels, Lisbon, Warsaw, Vienna, Dublin)
 - **Multi-source news aggregation**: Finnhub API, Bloomberg, Reuters, Financial Times, DW, Investing.com, and index/sector-specific feeds
 - **Client-side filtering**: instant exchange tabs and free-text search (ticker, company, or headline)
 - **Background refresh**: news updates every 15 minutes with rate-limited API calls
@@ -54,20 +54,25 @@ python app.py
 
 Open **http://localhost:5001** in your browser.
 
-The first page load takes ~2 minutes while it fetches news for all 113 tickers. Subsequent loads are instant from cache.
+The first page load takes ~6 minutes while it fetches news for all 300 tickers. Subsequent loads are instant from cache.
 
 ## Exchanges Covered
 
-| Exchange | Tickers | Examples |
-|----------|---------|----------|
-| Paris (Euronext) | 20 | LVMH, L'Oréal, TotalEnergies, Sanofi, BNP Paribas |
-| London (LSE) | 20 | Shell, AstraZeneca, HSBC, Unilever, BP |
-| Frankfurt (XETRA) | 20 | SAP, Siemens, Allianz, Volkswagen, Adidas |
-| Amsterdam (Euronext) | 11 | ASML, ING, Philips, Heineken |
-| Madrid (BME) | 10 | Santander, Inditex, Iberdrola, BBVA |
-| Zurich (SIX) | 12 | Nestlé, Roche, Novartis, UBS, ABB |
-| Nordic (OMX) | 12 | Novo Nordisk, Volvo, Ericsson, H&M |
-| Milan (Borsa Italiana) | 10 | Ferrari, Enel, UniCredit, Moncler |
+| Exchange | Index | Tickers | Examples |
+|----------|-------|---------|----------|
+| Paris (Euronext) | CAC 40 + Next 20 | 35 | LVMH, Hermès, L'Oréal, TotalEnergies, Sanofi |
+| London (LSE) | FTSE 100 | 40 | Shell, AstraZeneca, HSBC, Rolls-Royce, BAE Systems |
+| Frankfurt (XETRA) | DAX 40 | 36 | SAP, Siemens, Allianz, Porsche, Airbus |
+| Amsterdam (Euronext) | AEX 25 + AMX | 23 | ASML, Prosus, ING, Philips, Heineken |
+| Madrid (BME) | IBEX 35 | 23 | Santander, Inditex, Iberdrola, Cellnex, Aena |
+| Zurich (SIX) | SMI 20 + SLI | 24 | Nestlé, Roche, Novartis, Richemont, UBS |
+| Nordic (OMX) | OMX Stockholm/Copenhagen/Helsinki/Oslo | 42 | Novo Nordisk, Volvo, Equinor, Nokia, Ericsson |
+| Milan (Borsa Italiana) | FTSE MIB | 23 | Ferrari, Enel, UniCredit, Campari, Pirelli |
+| Brussels (Euronext) | BEL 20 | 14 | AB InBev, UCB, KBC, Solvay, Umicore |
+| Lisbon (Euronext) | PSI 20 | 11 | Galp, EDP, Jerónimo Martins, Corticeira Amorim |
+| Warsaw (GPW) | WIG 20 | 12 | PKO Bank, CD Projekt, Allegro, Dino Polska |
+| Vienna (Wiener Börse) | ATX | 10 | Verbund, Erste Group, OMV, Raiffeisen Bank |
+| Dublin (Euronext) | ISE | 7 | Ryanair, CRH, Flutter, Kingspan, Smurfit Kappa |
 
 ## Tech Stack
 
