@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>European Stock News Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>European Stock News</h1>
+        <div class="header-meta">
+            <span class="article-count">{{ total }} articles</span>
+            <span class="last-updated">Updated: {{ last_updated }}</span>
+        </div>
+    </header>
+
+    <div class="controls">
+        <div class="exchange-tabs">
+            <button class="tab active" data-exchange="all">All</button>
+            {% for exch in exchanges %}
+            <button class="tab" data-exchange="{{ exch }}">{{ exch }}</button>
+            {% endfor %}
+            <button class="tab" data-exchange="General">General</button>
+        </div>
+        <div class="search-box">
+            <input type="text" id="ticker-search" placeholder="Search ticker, company, or headline...">
+        </div>
+    </div>
+
+    <div class="no-results" id="no-results" style="display:none;">
+        No articles match your filter.
+    </div>
+
+    <div class="news-grid" id="news-grid">
+        {% for article in articles %}
+        <div class="news-card"
+             data-exchange="{{ article.exchange }}"
+             data-ticker="{{ article.ticker }}"
+             data-company="{{ article.company|lower }}"
+             data-headline="{{ article.headline|lower }}">
+            {% if article.image %}
+            <div class="card-image">
+                <img src="{{ article.image }}" alt="" loading="lazy"
+                     onerror="this.parentElement.style.display='none'">
+            </div>
+            {% endif %}
+            <div class="card-body">
+                <div class="card-badges">
+                    <span class="badge exchange-badge badge-{{ article.exchange|lower }}">{{ article.exchange }}</span>
+                    <span class="badge ticker-badge">{{ article.ticker }}</span>
+                </div>
+                <div class="card-company">{{ article.company }}</div>
+                <h3 class="card-headline">
+                    <a href="{{ article.url }}" target="_blank" rel="noopener noreferrer">{{ article.headline }}</a>
+                </h3>
+                {% if article.summary %}
+                <p class="card-summary">{{ article.summary[:200] }}{% if article.summary|length > 200 %}...{% endif %}</p>
+                {% endif %}
+                <div class="card-footer">
+                    <span class="card-source">{{ article.source }}</span>
+                    <span class="card-date">
+                        {% if article.datetime %}
+                            {{ article.datetime | int }}
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        // Format unix timestamps to readable dates
+        document.querySelectorAll('.card-date').forEach(el => {
+            const ts = parseInt(el.textContent.trim());
+            if (ts) {
+                const d = new Date(ts * 1000);
+                el.textContent = d.toLocaleDateString('en-GB', {
+                    day: 'numeric', month: 'short', year: 'numeric',
+                    hour: '2-digit', minute: '2-digit'
+                });
+            }
+        });
+
+        // Exchange tab filtering
+        const tabs = document.querySelectorAll('.tab');
+        const cards = document.querySelectorAll('.news-card');
+        const searchInput = document.getElementById('ticker-search');
+        const noResults = document.getElementById('no-results');
+        let activeExchange = 'all';
+
+        function applyFilters() {
+            const query = searchInput.value.toLowerCase().trim();
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const exch = card.dataset.exchange;
+                const ticker = card.dataset.ticker.toLowerCase();
+                const company = card.dataset.company;
+                const headline = card.dataset.headline;
+
+                const matchExchange = activeExchange === 'all' || exch === activeExchange;
+                const matchSearch = !query ||
+                    ticker.includes(query) ||
+                    company.includes(query) ||
+                    headline.includes(query);
+
+                if (matchExchange && matchSearch) {
+                    card.style.display = '';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            noResults.style.display = visibleCount === 0 ? '' : 'none';
+        }
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                activeExchange = tab.dataset.exchange;
+                applyFilters();
+            });
+        });
+
+        searchInput.addEventListener('input', applyFilters);
+    </script>
+</body>
+</html>
