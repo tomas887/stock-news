@@ -2,7 +2,9 @@ import os
 import time
 import calendar
 import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
+from urllib.parse import quote_plus
 
 import requests
 import feedparser
@@ -515,6 +517,59 @@ def fetch_rss_news() -> list[dict]:
 
 
 # ---------------------------------------------------------------------------
+# Google News RSS per company – free, no API key, no rate limit
+# Fetches news for each company by name, tagged with ticker/exchange
+# ---------------------------------------------------------------------------
+GNEWS_MAX_PER_COMPANY = 3
+GNEWS_CONCURRENCY = 15  # parallel threads
+
+
+def _fetch_company_gnews(ticker: str, company: str, exchange: str) -> list[dict]:
+    """Fetch Google News RSS for a single company name."""
+    query = quote_plus(f'"{company}" stock')
+    url = f"https://news.google.com/rss/search?q={query}&hl=en&gl=US&ceid=US:en"
+    try:
+        feed = feedparser.parse(url)
+        results = []
+        for entry in feed.entries[:GNEWS_MAX_PER_COMPANY]:
+            link = entry.get("link", "")
+            image = ""
+            media = entry.get("media_content", [])
+            if media and isinstance(media, list):
+                image = media[0].get("url", "")
+            results.append({
+                "ticker": ticker,
+                "company": company,
+                "exchange": exchange,
+                "headline": entry.get("title", ""),
+                "summary": entry.get("summary", "")[:300],
+                "url": link,
+                "source": "Google News",
+                "image": image,
+                "datetime": _parse_rss_date(entry),
+            })
+        return results
+    except Exception:
+        return []
+
+
+def fetch_company_gnews_all() -> list[dict]:
+    """Fetch Google News for all tickers in parallel."""
+    all_results = []
+    with ThreadPoolExecutor(max_workers=GNEWS_CONCURRENCY) as pool:
+        futures = {
+            pool.submit(_fetch_company_gnews, ticker, name, exch): ticker
+            for ticker, name, exch in TICKERS
+        }
+        for future in as_completed(futures):
+            try:
+                all_results.extend(future.result())
+            except Exception:
+                continue
+    return all_results
+
+
+# ---------------------------------------------------------------------------
 # In-memory article cache
 # ---------------------------------------------------------------------------
 _cache: dict = {"articles": [], "last_updated": None}
@@ -532,6 +587,8 @@ def _refresh_cache():
     all_articles.extend(general)
     rss = fetch_rss_news()
     all_articles.extend(rss)
+    gnews = fetch_company_gnews_all()
+    all_articles.extend(gnews)
     # Deduplicate by URL
     seen_urls: set[str] = set()
     unique = []
